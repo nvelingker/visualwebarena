@@ -440,6 +440,57 @@ class MultimodalCoTPromptConstructor(CoTPromptConstructor):
                 raise ValueError(
                     f"Gemini models do not support mode {self.lm_config.mode}"
                 )
+        elif self.lm_config.provider == 'huggingface':
+            message = [{"type": "text", "text": intro}]
+            for (x, y, z) in examples:
+                    example_img = Image.open(z)
+                    message.extend(
+                        [
+                            {"type": "text", "text": x},
+                            {
+                                "type": "text",
+                                "text": "IMAGES: (1) current page screenshot",
+                            },
+                            {
+                                "type": "image_url",
+                                "image_url": {
+                                    "url": pil_to_b64(example_img)
+                                },
+                            },
+                        ]
+                    )
+                    message.append(
+                        {"type": "text", "text": y}
+                    )
+            # Encode images and page_screenshot_img as base64 strings.
+            current_prompt = current
+            content = [
+                {
+                    "type": "text",
+                    "text": "IMAGES: (1) current page screenshot",
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {"url": pil_to_b64(page_screenshot_img)},
+                },
+            ]
+            for image_i, image in enumerate(images):
+                content.extend(
+                    [
+                        {
+                            "type": "text",
+                            "text": f"({image_i+2}) input image {image_i+1}",
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": pil_to_b64(image)},
+                        },
+                    ]
+                )
+            content = [{"type": "text", "text": current_prompt}] + content
+            message.extend(content)
+            final = [{"role": "user", "content": message}]
+            return final
         else:
             raise NotImplementedError(
                 f"Provider {self.lm_config.provider} not implemented"
