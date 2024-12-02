@@ -13,8 +13,8 @@ import tempfile
 import time
 from pathlib import Path
 from typing import List
-
 import openai
+
 import requests
 import torch
 from PIL import Image

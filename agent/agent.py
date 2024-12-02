@@ -1,7 +1,7 @@
 import argparse
 import json
 from typing import Any, Optional
-
+from transformers import AutoModel, MllamaForConditionalGeneration, AutoProcessor, AutoModelForCausalLM, AutoTokenizer
 import tiktoken
 from beartype import beartype
 from PIL import Image
@@ -114,9 +114,10 @@ class PromptAgent(Agent):
         self.prompt_constructor = prompt_constructor
         self.action_set_tag = action_set_tag
         self.captioning_fn = captioning_fn
+        self.model = MllamaForConditionalGeneration.from_pretrained(lm_config.model, torch_dtype="auto", device_map="auto") #device_map="auto")
 
         # Check if the model is multimodal.
-        if ("gemini" in lm_config.model or "gpt-4" in lm_config.model and "vision" in lm_config.model) and type(prompt_constructor) == MultimodalCoTPromptConstructor:
+        if (("gemini" in lm_config.model or "gpt-4" in lm_config.model and "vision" in lm_config.model) or "Vision" in lm_config.model) and type(prompt_constructor) == MultimodalCoTPromptConstructor:
             self.multimodal_inputs = True
         else:
             self.multimodal_inputs = False
@@ -165,7 +166,7 @@ class PromptAgent(Agent):
         lm_config = self.lm_config
         n = 0
         while True:
-            response = call_llm(lm_config, prompt)
+            response = call_llm(lm_config, prompt, self.model)
             force_prefix = self.prompt_constructor.instruction[
                 "meta_data"
             ].get("force_prefix", "")
