@@ -1,0 +1,42 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "run.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/nvelingker/unsupervised-nesy/benchmarks/visualwebarena",
+            "args": [
+                "--instruction_path", "agent/prompts/jsons/p_som_cot_id_actree_3s.json",
+                "--test_start_idx", "1",
+                "--test_end_idx", "2",
+                "--max_steps", "30",
+                "--result_dir", "./results",
+                "--test_config_base_dir", "config_files/vwa/test_classifieds",
+                "--provider", "huggingface",
+                "--model", "meta-llama/Llama-3.2-90B-Vision-Instruct",
+                "--mode", "chat",
+                "--max_obs_length", "15360",
+                "--action_set_tag", "som",
+                "--observation_type", "image_som"
+            ],
+            "env": {
+                "DATASET": "visualwebarena",
+                "CLASSIFIEDS": "localhost:9980",
+                "CLASSIFIEDS_RESET_TOKEN": "4b61655535e7ed388f0d40a93600254c",
+                "SHOPPING": "localhost:7770",
+                "REDDIT": "localhost:9999",
+                "WIKIPEDIA": "localhost:8888",
+                "HOMEPAGE": "localhost:4399",
+                "OPENAI_API_KEY": "HI",
+                "CUDA_VISIBLE_DEVICES":"0,1,2"
+            },
+            "preLaunchTask": "PreDebugTasks"
+        }
+    ]
+}
